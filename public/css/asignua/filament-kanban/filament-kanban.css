@@ -1,0 +1,275 @@
+/* Pin Tailwind v4 layer order: if this file loads before the panel CSS, a bare `@layer components` would otherwise rank below base (preflight) and unstyle Filament itself. */
+@layer theme, base, components, utilities;
+
+/* Inside a layer so utilities from recordClasses() (bg-danger-50, ring-2...) win over these defaults. */
+@layer components {
+/*
+ * Filament Kanban. Hand-written, no build step; everything is under .fi-kanban* so it cannot touch the host theme.
+ * Colours come from Filament's own variables (--gray-*, --primary-*, and --color-* set by the panel's .fi-color-* classes).
+ */
+.fi-kanban {
+    --kanban-column-width: 18rem;
+    --kanban-surface: var(--gray-50);
+    --kanban-card: #fff;
+    --kanban-border: color-mix(in oklab, var(--gray-950) 8%, transparent);
+    --kanban-text: var(--gray-950);
+    --kanban-muted: var(--gray-500);
+    --kanban-accent-fallback: var(--gray-400);
+}
+
+.dark .fi-kanban {
+    --kanban-surface: color-mix(in oklab, #fff 5%, transparent);
+    --kanban-card: var(--gray-900);
+    --kanban-border: color-mix(in oklab, #fff 10%, transparent);
+    --kanban-text: #fff;
+    --kanban-muted: var(--gray-400);
+}
+
+.fi-kanban-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.fi-kanban-search {
+    width: 100%;
+}
+
+@media (min-width: 40rem) {
+    .fi-kanban-search {
+        width: 18rem;
+    }
+}
+
+.fi-kanban-board {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+}
+
+.fi-kanban-column {
+    flex: 0 0 var(--kanban-column-width);
+    min-width: 0;
+    scroll-snap-align: start;
+    border-radius: 0.75rem;
+    background: var(--kanban-surface);
+    box-shadow: 0 0 0 1px var(--kanban-border);
+    --kanban-accent: var(--color-500, var(--kanban-accent-fallback));
+}
+
+/* Phones: one column at a time, snapping into place. */
+@media (max-width: 39.99rem) {
+    .fi-kanban-board {
+        scroll-snap-type: x mandatory;
+    }
+
+    .fi-kanban-column {
+        flex-basis: 85vw;
+    }
+}
+
+.fi-kanban-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-top: 3px solid var(--kanban-accent);
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.fi-kanban-header-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--kanban-accent);
+    flex: none;
+}
+
+.fi-kanban-title {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--kanban-text);
+}
+
+.fi-kanban-collapse {
+    margin-inline-start: auto;
+    display: inline-flex;
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    color: var(--kanban-muted);
+    cursor: pointer;
+}
+
+.fi-kanban-collapse:hover,
+.fi-kanban-collapse:focus-visible {
+    color: var(--kanban-text);
+}
+
+.fi-kanban-collapse-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.fi-kanban-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 5rem;
+    padding: 0.5rem;
+}
+
+.fi-kanban-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border-inline-start: 4px solid var(--kanban-accent);
+    background: var(--kanban-card);
+    box-shadow: 0 0 0 1px var(--kanban-border), 0 1px 2px rgb(0 0 0 / 0.05);
+    font-size: 0.875rem;
+    color: var(--kanban-text);
+    cursor: grab;
+    touch-action: pan-y;
+}
+
+.fi-kanban-card:hover {
+    box-shadow: 0 0 0 1px var(--primary-500), 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.fi-kanban-card--locked {
+    cursor: default;
+    opacity: 0.85;
+}
+
+.fi-kanban-card-title {
+    font-weight: 600;
+    text-align: start;
+    color: inherit;
+}
+
+/* The link covers the whole card, so the card is one big target while the title stays the focusable element. */
+.fi-kanban-card-link {
+    cursor: pointer;
+}
+
+.fi-kanban-card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.fi-kanban-card-link:focus-visible {
+    outline: none;
+}
+
+.fi-kanban-card-link:focus-visible::after {
+    border-radius: 0.5rem;
+    outline: 2px solid var(--primary-500);
+    outline-offset: 2px;
+}
+
+.fi-kanban-card-description {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--kanban-muted);
+}
+
+.fi-kanban-card-badges {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.fi-kanban-card--flash {
+    animation: fi-kanban-flash 1s ease-in-out 2;
+}
+
+@keyframes fi-kanban-flash {
+    50% {
+        background: color-mix(in oklab, var(--primary-500) 18%, var(--kanban-card));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-kanban-card--flash {
+        animation: none;
+    }
+}
+
+.fi-kanban-ghost {
+    opacity: 0.4;
+}
+
+.fi-kanban-chosen {
+    cursor: grabbing;
+}
+
+body.fi-kanban-grabbing,
+body.fi-kanban-grabbing * {
+    cursor: grabbing !important;
+}
+
+/* An empty column shows where to drop. */
+.fi-kanban-drop-hint {
+    display: none;
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px dashed var(--kanban-border);
+    border-radius: 0.5rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--kanban-muted);
+}
+
+.fi-kanban-cards:not(:has([data-kanban-record])) > .fi-kanban-drop-hint {
+    display: block;
+}
+
+/*
+ * A folded column is a narrow strip with the title running down it. It stays a drop zone: only the ghost of the card
+ * being dragged is shown inside it.
+ */
+.fi-kanban-column--collapsed {
+    flex-basis: 4rem;
+}
+
+.fi-kanban-column--collapsed .fi-kanban-header {
+    flex-direction: column;
+}
+
+.fi-kanban-column--collapsed .fi-kanban-collapse {
+    margin-inline-start: 0;
+}
+
+.fi-kanban-column--collapsed .fi-kanban-title {
+    writing-mode: vertical-rl;
+    max-height: 10rem;
+}
+
+.fi-kanban-column--collapsed .fi-kanban-cards {
+    min-height: 8rem;
+}
+
+.fi-kanban-column--collapsed .fi-kanban-cards > :not(.fi-kanban-ghost),
+.fi-kanban-column--collapsed .fi-kanban-header > :not(.fi-kanban-title):not(.fi-kanban-collapse):not(.fi-kanban-header-icon):not(.fi-badge) {
+    display: none;
+}
+
+@media (max-width: 39.99rem) {
+    .fi-kanban-column--collapsed {
+        flex-basis: 4rem;
+    }
+}
+}

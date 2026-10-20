@@ -1,0 +1,122 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*.php';
+@source '../../../views/filament/**/*.blade.php';
+@source '../../../views/components/documentation/**/*.blade.php';
+
+/* Keep the documentation layout scoped; Filament supplies component colors and typography. */
+.documentation {
+    --docs-border: var(--gray-200);
+    --docs-muted: var(--gray-500);
+    --docs-surface: white;
+    --docs-sticky-top: calc(var(--topbar-height, 4rem) + 1rem);
+    display: grid;
+    gap: 1.5rem;
+    min-width: 0;
+}
+.dark .documentation {
+    --docs-border: var(--gray-800);
+    --docs-muted: var(--gray-400);
+    --docs-surface: var(--gray-900);
+}
+.documentation :where(button, a, summary, pre, table, #docs-section-title):focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 4px;
+}
+.documentation .docs-overview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.documentation .docs-eyebrow {
+    color: var(--docs-muted);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+.documentation .docs-progress { width: min(100%, 23rem); }
+.documentation .docs-progress-label { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .25rem 1rem; }
+.documentation .docs-progress-title { color: var(--gray-600); font-size: .8125rem; }
+.documentation .docs-progress-count { color: var(--gray-900); font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dark .documentation .docs-progress-title { color: var(--gray-400); }
+.dark .documentation .docs-progress-count { color: var(--gray-100); }
+.documentation .docs-progress progress {
+    display: block;
+    width: 100%;
+    height: .5rem;
+    margin-top: .5rem;
+    appearance: none;
+    border: 0;
+    overflow: hidden;
+    border-radius: 99px;
+    background: var(--docs-border);
+    accent-color: var(--primary-500);
+}
+.documentation progress::-webkit-progress-bar { background: var(--docs-border); }
+.documentation progress::-webkit-progress-value { background: var(--primary-500); border-radius: 99px; }
+.documentation progress::-moz-progress-bar { background: var(--primary-500); border-radius: 99px; }
+.documentation .docs-layout { display: grid; gap: 1.5rem; min-width: 0; align-items: start; }
+.documentation .docs-sidebar {
+    display: none;
+    background: var(--docs-surface);
+    border: 1px solid var(--docs-border);
+    border-radius: .75rem;
+    padding: 1rem .5rem;
+}
+.documentation .docs-sidebar.is-open { display: block; }
+.documentation .docs-sidebar-label { padding: 0 .75rem .75rem; }
+.documentation .docs-nav-list { display: grid; gap: .25rem; }
+.documentation .docs-nav-item {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    padding: .75rem;
+    border-radius: .5rem;
+    text-align: start;
+    font-size: .8125rem;
+    line-height: 1.45;
+    transition: background-color .15s;
+}
+.documentation .docs-nav-item:hover { background: color-mix(in oklab, var(--gray-500) 8%, transparent); }
+.documentation .docs-nav-item[aria-current="page"] {
+    background: color-mix(in oklab, var(--primary-500) 12%, transparent);
+    box-shadow: inset 3px 0 var(--primary-500);
+}
+.documentation .docs-nav-label { flex: 1; min-width: 0; font-weight: 500; }
+.documentation .docs-nav-item .fi-badge { font-size: .625rem; white-space: nowrap; }
+.documentation .docs-content { min-width: 0; display: grid; gap: 1.25rem; }
+.documentation .docs-section-header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.documentation .docs-title { font-size: clamp(1.3rem, 2vw, 1.75rem); font-weight: 650; letter-spacing: -.025em; line-height: 1.3; }
+.documentation .docs-subtitle { color: var(--docs-muted); font-size: .875rem; margin-top: .375rem; }
+.documentation .docs-tabs { overflow-x: auto; padding: .25rem; }
+.documentation .docs-tabs .fi-tabs { width: max-content; min-width: 100%; }
+.documentation .docs-panel { min-width: 0; display: grid; gap: 1.25rem; }
+.documentation .docs-panel[hidden] { display: none; }
+.documentation .docs-reading { width: 100%; min-width: 0; overflow-wrap: anywhere; }
+.documentation .docs-reading :where(p, ul, ol, blockquote) { max-width: 80ch; }
+.documentation .docs-reading pre { max-width: 100%; overflow-x: auto; }
+.documentation .docs-reading table { display: block; max-width: 100%; overflow-x: auto; }
+.documentation .docs-reading img { max-width: 100%; }
+.documentation .docs-stack { display: grid; gap: 1rem; }
+.documentation .docs-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; }
+.documentation .docs-meta { color: var(--docs-muted); font-size: .8125rem; }
+.documentation .docs-pagination { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .75rem; border-top: 1px solid var(--docs-border); padding-top: 1rem; }
+.documentation .docs-version-list { display: grid; gap: .75rem; }
+.documentation .docs-version { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; padding-block: .75rem; border-bottom: 1px solid var(--docs-border); }
+.documentation .docs-technology { display: grid; gap: .5rem; margin-block: 1rem; }
+.documentation .docs-technology > div { display: grid; gap: .25rem; border-bottom: 1px solid var(--docs-border); padding-bottom: .5rem; }
+.documentation .docs-technology dt { font-weight: 600; }
+.documentation .docs-unsaved { color: var(--warning-600); font-size: .8125rem; }
+.dark .documentation .docs-unsaved { color: var(--warning-400); }
+@media (min-width: 1100px) {
+    .documentation .docs-layout { grid-template-columns: 17rem minmax(0, 1fr); }
+    .documentation .docs-sidebar { display: block; position: sticky; top: var(--docs-sticky-top); max-height: calc(100dvh - var(--docs-sticky-top) - 1rem); overflow-y: auto; }
+    .documentation .docs-section-toggle { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .documentation .docs-nav-item { transition: none; }
+}
