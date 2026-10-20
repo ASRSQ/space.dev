@@ -7,6 +7,13 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## SPACE.dev — instalação do banco
+
+Consulte a [auditoria das migrations](docs/database-installation-audit.md) e o
+[guia de instalação em hospedagem compartilhada](docs/shared-hosting-installation.md).
+A instalação limpa requer MySQL; a base nova não deve ser aplicada diretamente
+a um banco existente.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
