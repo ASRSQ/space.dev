@@ -100,22 +100,7 @@ foreach ($inventory['ddl'] as $table => $expected) {
         throw new RuntimeException("Source changed since diagnosis: $table");
     }
 }
-$normalize = static function (string $ddl): array {
-    $ddl = preg_replace('/ AUTO_INCREMENT=\d+/', '', $ddl);
-    // Explicit DYNAMIC is equivalent to the reference's verified Dynamic default.
-    $ddl = str_replace(' ROW_FORMAT=DYNAMIC', '', $ddl);
-    // MySQL 5.7 emits integer display widths; these do not change storage/range.
-    $ddl = preg_replace('/\b(bigint|int|smallint)\(\d+\)/i', '$1', $ddl);
-    // InnoDB treats NO ACTION and RESTRICT as the default immediate check.
-    // SHOW CREATE can omit these explicit defaults on MySQL 5.7.
-    $ddl = preg_replace('/ ON (?:DELETE|UPDATE) (?:NO ACTION|RESTRICT)\b/', '', $ddl);
-    $ddl = str_replace(' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci', ' COLLATE utf8mb4_unicode_ci', $ddl);
-    $lines = explode("\n", $ddl);
-    $lines = array_map(fn ($line) => rtrim(trim($line), ','), $lines);
-    sort($lines);
-
-    return $lines;
-};
+$normalize = require __DIR__.'/normalize-individual-migration-ddl.php';
 $differences = [];
 $expectedFinalDdl = [];
 foreach ($inventory['ddl'] as $table => $expected) {
