@@ -14,7 +14,18 @@ Consulte a [auditoria das migrations](docs/database-installation-audit.md) e o
 A instalação limpa requer MySQL; a base nova não deve ser aplicada diretamente
 a um banco existente.
 
+Para o erro de tabelas de domínio ausentes no upload, consulte a
+[correção do pacote para HostGator](docs/hostgator-migration-repair.md).
+
 ## About Laravel
+
+Para a nova cadeia de migrations individuais, consulte o
+[guia da refatoração](docs/individual-migrations.md). Ele substitui as instruções
+do baseline para novos releases e separa a adoção de instalações existentes.
+MySQL 5.7.44 permanece com validação pendente; não use o ZIP antigo com esta cadeia.
+
+A [revisão final e o roteiro de teste na HostGator](docs/mysql57-final-review.md)
+incluem a seleção de arquivos para commit e a validação em banco criado pelo cPanel.
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 

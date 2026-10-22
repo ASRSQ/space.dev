@@ -1,3 +1,5 @@
+> Atualização: este documento descreve a cadeia consolidada anterior. Para este release, siga [migrations individuais](individual-migrations.md). MySQL 5.7.44 continua pendente de validação. Não aplique o pacote antigo sobre a nova cadeia.
+
 # Instalação do SPACE.dev em hospedagem compartilhada
 
 ## Escopo e compatibilidade

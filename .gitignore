@@ -25,3 +25,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Local review artifacts; preserve them on disk, exclude them from commits.
+/dist/
+/docs/individual-phpunit-results.xml
+/docs/migration-refactor-original/initial-state.json
+/docs/migration-refactor-original/preexisting-changes.patch
+.env.*
+!.env.example

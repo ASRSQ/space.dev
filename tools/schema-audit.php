@@ -30,6 +30,12 @@ $out['migrations'] = $db->table('migrations')->orderBy('id')->get()->all();
 if (in_array('--verify', $argv, true)) {
     $expected = json_decode(file_get_contents(dirname(__DIR__).'/docs/schema-inventory.json'), true, flags: JSON_THROW_ON_ERROR);
     $current = json_decode(json_encode($out), true, flags: JSON_THROW_ON_ERROR);
+    // information_schema has no guaranteed row order. Compare trigger metadata
+    // by identity, including bodies, timestamps, definers and SQL modes.
+    usort($current['TRIGGERS'], fn ($a, $b) => $a['TRIGGER_NAME'] <=> $b['TRIGGER_NAME']);
+    usort($expected['TRIGGERS'], fn ($a, $b) => $a['TRIGGER_NAME'] <=> $b['TRIGGER_NAME']);
+    ksort($current['ddl']);
+    ksort($expected['ddl']);
     foreach (['ddl', 'TRIGGERS', 'migrations'] as $key) {
         if ($current[$key] !== $expected[$key]) {
             fwrite(STDERR, "Source metadata changed: $key\n");

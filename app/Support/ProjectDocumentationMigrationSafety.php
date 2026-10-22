@@ -96,6 +96,13 @@ final class ProjectDocumentationMigrationSafety
             }
         }
 
+        // Both original functional-index installations and the new generated-column
+        // installations may be rolled back, but never accept half of the new pair.
+        $generated = array_map(fn ($table, $columns) => Schema::hasColumn($table, $columns[0]), array_keys(self::LEGACY_COLUMNS), array_values(self::LEGACY_COLUMNS));
+        if (count(array_unique($generated)) > 1) {
+            $missing[] = 'incomplete generated pending-key column pair';
+        }
+
         foreach (self::INDEXES as $table => $indexes) {
             foreach ($indexes as $index) {
                 if (! Schema::hasTable($table) || ! Schema::hasIndex($table, $index)) {

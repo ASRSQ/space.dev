@@ -1,3 +1,5 @@
+> Atualização: este documento descreve a cadeia consolidada anterior. Para este release, siga [migrations individuais](individual-migrations.md). MySQL 5.7.44 continua pendente de validação. Não aplique o pacote antigo sobre a nova cadeia.
+
 # Central de Documentação: implantação e recuperação no MySQL 8.4
 
 A migration `2026_10_18_000003_add_project_documentation_workflow.php` executa várias etapas DDL. No MySQL, cada DDL pode confirmar implicitamente; trate uma falha como possível estado parcial.

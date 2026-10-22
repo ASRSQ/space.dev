@@ -106,5 +106,5 @@ try {
 }
 $report['smoke_checks'] = $checks;
 $report['smoke_data_rolled_back'] = User::query()->count() === 0 && Project::query()->count() === 0;
-file_put_contents(dirname(__DIR__).'/docs/clean-install-validation.json', json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
+file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
 echo count($checks)." smoke checks passed; temporary records rolled back.\n";
