@@ -1,0 +1,40 @@
+{
+    "database": "spacedev_clean_validation_20261020_142556_a0cf8d",
+    "scenario": "resume_after_infrastructure_only",
+    "migration_history": [
+        "0001_01_01_000000_create_users_table",
+        "0001_01_01_000001_create_cache_table",
+        "0001_01_01_000002_create_jobs_table",
+        "0000_01_01_000000_create_space_domain",
+        "2026_10_18_000003_add_project_documentation_workflow",
+        "2026_10_19_000001_add_task_deadlines"
+    ],
+    "server": "8.4.3",
+    "total_tables": 53,
+    "domain_tables_compared": 45,
+    "triggers": 6,
+    "application_rows_after_migrate": 0,
+    "differences": [],
+    "smoke_checks": [
+        "Production seeder creates roles only",
+        "Password hash authentication",
+        "Active administrator panel permission",
+        "Viewer panel permission denied",
+        "Project owner relationship",
+        "Unique pending review: overview",
+        "Documentation publication and version: overview",
+        "Unique pending review: architecture",
+        "Documentation publication and version: architecture",
+        "Document current version and draft cleanup",
+        "Task deadlines and completion",
+        "Task status history",
+        "Trigger rejects self relationship",
+        "Foreign key rejects orphan comment",
+        "Trigger rejects cross-project category",
+        "Trigger rejects cross-project tag",
+        "GitHub connection encrypted token round trip",
+        "AI configuration, conversation, message and action",
+        "Comments, GitHub logs and webhook storage"
+    ],
+    "smoke_data_rolled_back": true
+}

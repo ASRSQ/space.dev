@@ -34,6 +34,18 @@ if ($db->selectOne('SELECT DATABASE() AS db')->db !== $database || ! str_starts_
     throw new RuntimeException('Isolated database guard failed.');
 }
 echo "Isolated database: $database\n";
+if (in_array('--infrastructure-first', $argv, true)) {
+    // Reproduce an upload that omitted the baseline but ran Laravel infrastructure.
+    $status = Artisan::call('migrate', ['--database' => 'clean_validation', '--force' => true, '--path' => [
+        'database/migrations/0001_01_01_000000_create_users_table.php',
+        'database/migrations/0001_01_01_000001_create_cache_table.php',
+        'database/migrations/0001_01_01_000002_create_jobs_table.php',
+    ]]);
+    echo Artisan::output();
+    if ($status !== 0) {
+        throw new RuntimeException('Infrastructure-only reproduction failed.');
+    }
+}
 $status = Artisan::call('migrate', ['--database' => 'clean_validation', '--force' => true]);
 echo Artisan::output();
 if ($status !== 0) {
@@ -73,8 +85,9 @@ foreach ($db->select('SHOW TABLES') as $row) {
         $rows += $db->table($table)->count();
     }
 }
-$report = ['database' => $database, 'server' => $db->selectOne('SELECT VERSION() AS v')->v, 'total_tables' => count($db->select('SHOW TABLES')), 'domain_tables_compared' => count($inventory['ddl']) - 1, 'triggers' => count($triggers), 'application_rows_after_migrate' => $rows, 'differences' => $differences];
-file_put_contents(dirname(__DIR__).'/docs/clean-install-validation.json', json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
+$report = ['database' => $database, 'scenario' => in_array('--infrastructure-first', $argv, true) ? 'resume_after_infrastructure_only' : 'empty_database', 'migration_history' => $db->table('migrations')->orderBy('id')->pluck('migration')->all(), 'server' => $db->selectOne('SELECT VERSION() AS v')->v, 'total_tables' => count($db->select('SHOW TABLES')), 'domain_tables_compared' => count($inventory['ddl']) - 1, 'triggers' => count($triggers), 'application_rows_after_migrate' => $rows, 'differences' => $differences];
+$reportPath = dirname(__DIR__).'/docs/'.(in_array('--infrastructure-first', $argv, true) ? 'infrastructure-resume-validation.json' : 'clean-install-validation.json');
+file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
 echo json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)."\n";
 if ($differences !== [] || $rows !== 0) {
     throw new RuntimeException('Schema mismatch or unexpected application rows.');

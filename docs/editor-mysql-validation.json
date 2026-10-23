@@ -1,0 +1,13 @@
+{
+    "database": "spacedev_editor_validation_20261023_131312_7827eb59",
+    "server": "8.4.3",
+    "port": 3306,
+    "php": "8.3.16",
+    "phpunit_exit_code": 0,
+    "source_rows_unchanged": true,
+    "application_rows_after_tests": 0,
+    "actual_local_sc001_matches": 0,
+    "actual_local_lauro_matches": 0,
+    "actual_local_assignment_read_only": [],
+    "browser_executed": false
+}

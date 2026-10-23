@@ -1,5 +1,14 @@
 {
-    "database": "spacedev_clean_validation_20261020_141242_63e9c4",
+    "database": "spacedev_clean_validation_20261020_142556_ad87de",
+    "scenario": "empty_database",
+    "migration_history": [
+        "0000_01_01_000000_create_space_domain",
+        "0001_01_01_000000_create_users_table",
+        "0001_01_01_000001_create_cache_table",
+        "0001_01_01_000002_create_jobs_table",
+        "2026_10_18_000003_add_project_documentation_workflow",
+        "2026_10_19_000001_add_task_deadlines"
+    ],
     "server": "8.4.3",
     "total_tables": 53,
     "domain_tables_compared": 45,

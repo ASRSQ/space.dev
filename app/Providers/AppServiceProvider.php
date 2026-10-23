@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Auth\ActiveUserProvider;
+use App\Models\Problem;
 use App\Models\Task;
-use App\Policies\TaskPolicy;
+use App\Policies\ProblemPolicy;
 use App\Policies\ProjectDocumentationPolicy;
-use Illuminate\Support\Facades\Gate;
+use App\Policies\TaskPolicy;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::policy(Task::class, TaskPolicy::class);
+        Gate::policy(Problem::class, ProblemPolicy::class);
         Gate::define('view-project-documentation', [ProjectDocumentationPolicy::class, 'view']);
         Gate::define('edit-project-documentation', [ProjectDocumentationPolicy::class, 'edit']);
         Gate::define('submit-project-documentation', [ProjectDocumentationPolicy::class, 'submit']);

@@ -9,16 +9,18 @@ use App\Models\User;
 use App\Services\TaskAssignmentService;
 use App\Services\TaskCreationService;
 use App\Services\TaskLifecycleService;
+use App\Support\TaskMarkdown;
 use Asignua\FilamentKanban\Events\KanbanRecordMoved;
 use Asignua\FilamentKanban\Pages\KanbanResourcePage;
 use Asignua\FilamentKanban\Support\KanbanColumn;
 use DomainException;
 use Filament\Actions\Action;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -121,9 +123,13 @@ class TaskKanban extends KanbanResourcePage
                     ->label('Título')
                     ->required()
                     ->maxLength(200),
-                Textarea::make('description')
+                MarkdownEditor::make('description')
                     ->label('Descrição')
-                    ->rows(3),
+                    ->commonMarkOptions(TaskMarkdown::OPTIONS)
+                    ->fileAttachments(false)
+                    ->live(onBlur: true),
+                View::make('filament.tasks.description-preview')
+                    ->viewData(fn (Get $get): array => ['markdown' => $get('description')]),
                 Select::make('project_id')
                     ->label('Projeto')
                     ->options(fn (): array => app(TaskAssignmentService::class)->projectOptionsForTaskCreation())

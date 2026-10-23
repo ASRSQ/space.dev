@@ -10,14 +10,15 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Services\TaskAssignmentService;
 use App\Services\TaskLifecycleService;
+use App\Support\TaskMarkdown;
 use BackedEnum;
 use DomainException;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -25,6 +26,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -82,15 +84,20 @@ class TaskResource extends Resource
                         ->rules(['required', Rule::in(Task::PRIORITIES)]),
                     Select::make('assigned_user_id')
                         ->label('Responsável')
-                        ->options(fn (Get $get): array => app(TaskAssignmentService::class)
-                            ->optionsForProject(filled($get('project_id')) ? (int) $get('project_id') : null))
+                        ->options(fn (Get $get, ?Task $record): array => app(TaskAssignmentService::class)
+                            ->optionsForEditing(filled($get('project_id')) ? (int) $get('project_id') : null, $record))
                         ->searchable()
                         ->placeholder('Sem responsável')
                         ->rules(['nullable', 'integer']),
                     ...self::deadlineFields(),
-                    Textarea::make('description')
+                    MarkdownEditor::make('description')
                         ->label('Descrição')
-                        ->rows(5)
+                        ->commonMarkOptions(TaskMarkdown::OPTIONS)
+                        ->fileAttachments(false)
+                        ->live(onBlur: true)
+                        ->columnSpanFull(),
+                    View::make('filament.tasks.description-preview')
+                        ->viewData(fn (Get $get): array => ['markdown' => $get('description')])
                         ->columnSpanFull(),
                 ]),
         ]);
@@ -109,7 +116,7 @@ class TaskResource extends Resource
                     TextEntry::make('status')->label('Status')->badge()->formatStateUsing(fn (string $state): string => self::statusOptions()[$state] ?? $state),
                     TextEntry::make('assignedUser.name')->label('Responsável')->placeholder('Sem responsável'),
                     TextEntry::make('reporter.name')->label('Relator'),
-                    TextEntry::make('description')->label('Descrição')->placeholder('—')->columnSpanFull(),
+                    TextEntry::make('description')->label('Descrição')->view('filament.tasks.description')->columnSpanFull(),
                     TextEntry::make('is_archived')->label('Arquivada')->formatStateUsing(fn (bool $state): string => $state ? 'Sim' : 'Não'),
                     TextEntry::make('archived_at')->label('Arquivada em')->dateTime()->placeholder('—'),
                     TextEntry::make('created_at')->label('Criada em')->dateTime(),

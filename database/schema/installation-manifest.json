@@ -1,0 +1,24 @@
+{
+    "migration_order": [
+        "0000_01_01_000000_create_space_domain.php",
+        "0001_01_01_000000_create_users_table.php",
+        "0001_01_01_000001_create_cache_table.php",
+        "0001_01_01_000002_create_jobs_table.php",
+        "2026_10_18_000003_add_project_documentation_workflow.php",
+        "2026_10_19_000001_add_task_deadlines.php"
+    ],
+    "files": {
+        "database/migrations/0000_01_01_000000_create_space_domain.php": "2a583716528b4890d6089e8947bae69f29c35a28fcc69d4e2bdc5488dc7b5e12",
+        "database/migrations/0001_01_01_000000_create_users_table.php": "886b048ac8a5b57cc93ca184a05236bd79a469de75fa4f0433bf7a0cda473623",
+        "database/migrations/0001_01_01_000001_create_cache_table.php": "2ca8398390ecef8eaf72aeac7fefce67f7de631b6f2ec7b7081c8db8953215dc",
+        "database/migrations/0001_01_01_000002_create_jobs_table.php": "7c9c712adf4091c87bf2612f4d0dccdfa1df4501553e4ac068b83d7bd5462fa5",
+        "database/migrations/2026_10_18_000003_add_project_documentation_workflow.php": "3038790b6ed032e426e9a98f5a74d0e346c10e49d3b8946ab5de1d84fdadb2b6",
+        "database/migrations/2026_10_19_000001_add_task_deadlines.php": "95234dd7c860baec5f827957022d1b0783f391e1752fe3d1e08a7cfe93675207",
+        "database/schema/space-baseline.json": "f9c68b1f6da8e15618c7e061972cbbdb57917a2d10b2a5377ccb3c18a2e4821f",
+        "app/Support/ProjectDocumentationMigrationSafety.php": "7c92292ec78f9780ad045849b9964d0549aaa98d3ed0e2d57cabc7b3239edf29",
+        "app/Console/Commands/CreateFirstAdministrator.php": "27697df7b3f7618a8510c6d2a2fb1374d8d9a6e013bd665a6d771adb65f877cd",
+        "database/seeders/DatabaseSeeder.php": "536fe7f3e27c1145830963357bd5d8f57d28727008595aab76075340f260ab68",
+        "database/seeders/RoleSeeder.php": "92c5fde50398dbce11e52c91040246de9ddd17ce9920bb8dc8e3f209776902ce",
+        "tools/check-installation-package.php": "9eb499f904aa639a0e7068bae62702e41a59f10ea242eb5f65ddac60b00edabe"
+    }
+}

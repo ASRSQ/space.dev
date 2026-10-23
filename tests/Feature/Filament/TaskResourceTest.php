@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Services\TaskAssignmentService;
 use App\Services\TaskCreationService;
 use App\Services\TaskLifecycleService;
+use App\Support\TaskMarkdown;
 use DomainException;
 use Filament\Facades\Filament;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -325,7 +326,7 @@ class TaskResourceTest extends TestCase
         $this->assertSame(0, Task::query()->count());
     }
 
-    public function test_assignee_membership_is_revalidated_when_editing(): void
+    public function test_existing_assignee_is_preserved_when_membership_is_revoked(): void
     {
         $admin = $this->makeUser('admin');
         $owner = $this->makeUser('user');
@@ -340,14 +341,17 @@ class TaskResourceTest extends TestCase
         Filament::setCurrentPanel('admin');
 
         Livewire::test(EditTask::class, ['record' => $task->getRouteKey()])
+            ->assertFormSet(['assigned_user_id' => $assignee->getKey()])
+            ->assertFormFieldExists('assigned_user_id', fn ($field): bool => str_contains($field->getOptions()[$assignee->id], 'não elegível'))
             ->fillForm([
                 'title' => 'Changed while assignment is invalid',
                 'assigned_user_id' => $assignee->getKey(),
             ])
             ->call('save')
-            ->assertHasFormErrors(['assigned_user_id']);
+            ->assertHasNoFormErrors();
 
-        $this->assertSame('Original task', $task->fresh()->title);
+        $this->assertSame('Changed while assignment is invalid', $task->fresh()->title);
+        $this->assertSame($assignee->getKey(), $task->fresh()->assigned_user_id);
     }
 
     public function test_creation_is_restricted_to_active_projects_and_paused_projects_remain_editable(): void
@@ -1041,6 +1045,90 @@ class TaskResourceTest extends TestCase
         $this->assertNull($after['completed_at']);
         $this->assertNull($after['due_date']);
         $this->assertNull($after['start_date']);
+    }
+
+    public function test_markdown_rendering_is_safe_and_supports_structured_content(): void
+    {
+        $markdown = "# Título\n\n## Objetivo\n\n### Entregas\n\n**Forte** *ênfase* [link](https://example.com)\nquebra\n\n- Lista\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n```php\necho 'ok';\n```\n\n- [ ] Pendente\n- [x] Pronto\n\n<script>alert(1)</script>\n\n<img src=x onerror=alert(1)>\n\n[ruim](javascript:alert(1))";
+        $html = app(TaskMarkdown::class)->render($markdown);
+        foreach (['<h1>', '<h2>', '<h3>', '<strong>', '<em>', '<ul>', '<table>', 'language-php', '<br>', 'type="checkbox"', 'checked=""', 'disabled=""'] as $fragment) {
+            $this->assertStringContainsString($fragment, $html);
+        }
+        foreach (['<script', '<img', 'javascript:', 'onerror'] as $fragment) {
+            $this->assertStringNotContainsString($fragment, $html);
+        }
+    }
+
+    public function test_checklist_persists_and_stale_updates_are_rejected(): void
+    {
+        $admin = $this->makeUser('admin');
+        $description = "# Antiga\r\n\r\n- [ ] Primeiro\r\n- [x] Segundo\r\n\r\n```md\r\n- [ ] Exemplo\r\n```";
+        $task = $this->makeTask($this->makeProject($admin), $admin, ['description' => $description]);
+        $this->actingAs($admin, 'web');
+        Filament::setCurrentPanel('admin');
+        $view = Livewire::test(ViewTask::class, ['record' => $task->id])
+            ->assertSee('wire:change', false)
+            ->call('toggleChecklist', 3, hash('sha256', $description), true);
+        $updated = str_replace('[ ] Primeiro', '[x] Primeiro', $description);
+        $this->assertSame($updated, $task->fresh()->description);
+        $view->call('toggleChecklist', 4, hash('sha256', $description), false)
+            ->assertNotified('A descrição foi alterada. Confira a versão atual e tente novamente.');
+        $this->assertSame($updated, $task->fresh()->description);
+        Livewire::test(ViewTask::class, ['record' => $task->id])
+            ->call('toggleChecklist', 3, hash('sha256', $updated), false);
+        $this->assertSame($description, $task->fresh()->description);
+    }
+
+    public function test_checklist_cannot_modify_code_examples(): void
+    {
+        $this->expectException(ValidationException::class);
+        app(TaskMarkdown::class)->toggle("```md\n- [ ] Exemplo\n```", 2, true);
+    }
+
+    public function test_checklist_reauthorizes_every_request(): void
+    {
+        $admin = $this->makeUser('admin');
+        $task = $this->makeTask($this->makeProject($admin), $admin, ['description' => '- [ ] Item']);
+        $this->actingAs($admin, 'web');
+        Filament::setCurrentPanel('admin');
+        $view = Livewire::test(ViewTask::class, ['record' => $task->id]);
+        $task->project->update(['status' => 'archived', 'is_archived' => true, 'archived_at' => now()]);
+        $view->call('toggleChecklist', 1, hash('sha256', $task->description), true)->assertForbidden();
+        $this->assertSame('- [ ] Item', $task->fresh()->description);
+    }
+
+    public function test_edit_preserves_legacy_description_and_changes_assignee(): void
+    {
+        $admin = $this->makeUser('admin');
+        $project = $this->makeProject($admin);
+        $first = $this->makeUser('developer');
+        $second = $this->makeUser('developer');
+        $this->makeMembership($project, $first, $admin);
+        $this->makeMembership($project, $second, $admin);
+        $description = "Texto antigo\r\n  com espaços\r\n\n- [x] Item";
+        $task = $this->makeTask($project, $admin, ['assigned_user_id' => $first->id, 'description' => $description]);
+        $this->actingAs($admin, 'web');
+        Filament::setCurrentPanel('admin');
+        $edit = Livewire::test(EditTask::class, ['record' => $task->id])
+            ->assertFormSet(['assigned_user_id' => $first->id, 'description' => $description])
+            ->fillForm(['title' => 'Novo título'])->call('save')->assertHasNoFormErrors();
+        $this->assertSame($first->id, $task->fresh()->assigned_user_id);
+        $this->assertSame($description, $task->fresh()->description);
+        $edit->fillForm(['assigned_user_id' => $second->id])->call('save')->assertHasNoFormErrors();
+        $this->assertSame($second->id, $task->fresh()->assigned_user_id);
+        Livewire::test(ViewTask::class, ['record' => $task->id])->assertSee($second->name);
+    }
+
+    public function test_stale_edit_cannot_overwrite_new_description(): void
+    {
+        $admin = $this->makeUser('admin');
+        $task = $this->makeTask($this->makeProject($admin), $admin, ['description' => '- [ ] Item']);
+        $this->actingAs($admin, 'web');
+        Filament::setCurrentPanel('admin');
+        $edit = Livewire::test(EditTask::class, ['record' => $task->id]);
+        $task->update(['description' => '- [x] Item']);
+        $edit->fillForm(['description' => 'Versão antiga'])->call('save')->assertHasFormErrors(['description']);
+        $this->assertSame('- [x] Item', $task->fresh()->description);
     }
 
     private function makeUser(string $roleSlug, string $status = 'active'): User

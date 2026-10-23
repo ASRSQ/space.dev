@@ -4,10 +4,24 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\ProjectMembership;
+use App\Models\Task;
 use App\Models\User;
 
 class TaskAssignmentService
 {
+    public function optionsForEditing(?int $projectId, ?Task $task): array
+    {
+        $options = $this->optionsForProject($projectId);
+        if ($task?->assigned_user_id && ! array_key_exists($task->assigned_user_id, $options)) {
+            $user = $task->assignedUser;
+            if ($user) {
+                $options[$user->id] = "{$user->name} (#{$user->id}) — não elegível; atribuição mantida";
+            }
+        }
+
+        return $options;
+    }
+
     public function isEligible(?int $userId, ?int $projectId): bool
     {
         if ($userId === null || $projectId === null) {
@@ -76,5 +90,4 @@ class TaskAssignmentService
             && $project->status === 'active'
             && ! $project->isArchived();
     }
-
 }
