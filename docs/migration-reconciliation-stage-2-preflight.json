@@ -1,0 +1,637 @@
+{
+    "stage": 2,
+    "mode": "read_only_preflight",
+    "database_modified": false,
+    "failures": [
+        "Schema/data divergence: ai_provider_configs",
+        "Schema/data divergence: assistant_actions",
+        "Schema/data divergence: assistant_conversations",
+        "Schema/data divergence: assistant_messages",
+        "Schema/data divergence: audit_logs",
+        "Schema/data divergence: categories",
+        "Schema/data divergence: document_change_request_decisions",
+        "Schema/data divergence: document_change_requests",
+        "Schema/data divergence: document_tags",
+        "Schema/data divergence: document_versions",
+        "Schema/data divergence: documents",
+        "Schema/data divergence: github_connections",
+        "Schema/data divergence: github_query_logs",
+        "Schema/data divergence: github_webhook_events",
+        "Schema/data divergence: problem_diagnoses",
+        "Schema/data divergence: problem_event_histories",
+        "Schema/data divergence: problems",
+        "Schema/data divergence: project_environments",
+        "Schema/data divergence: project_memberships",
+        "Schema/data divergence: project_technologies",
+        "Schema/data divergence: projects",
+        "Schema/data divergence: prompt_change_request_decisions",
+        "Schema/data divergence: prompt_change_requests",
+        "Schema/data divergence: prompt_favorites",
+        "Schema/data divergence: prompt_templates",
+        "Schema/data divergence: prompt_variables",
+        "Schema/data divergence: prompt_versions",
+        "Schema/data divergence: roles",
+        "Schema/data divergence: solution_change_request_decisions",
+        "Schema/data divergence: solution_change_requests",
+        "Schema/data divergence: solution_validations",
+        "Schema/data divergence: solution_versions",
+        "Schema/data divergence: solutions",
+        "Schema/data divergence: tags",
+        "Schema/data divergence: task_comments",
+        "Schema/data divergence: task_relations",
+        "Schema/data divergence: task_status_histories",
+        "Schema/data divergence: tasks",
+        "Schema/data divergence: technical_context_change_request_decisions",
+        "Schema/data divergence: technical_context_change_requests",
+        "Schema/data divergence: technical_context_versions",
+        "Schema/data divergence: technical_contexts",
+        "Schema/data divergence: users",
+        "Metadata divergence: triggers"
+    ],
+    "identity": {
+        "db": "spacedev_test",
+        "version": "8.4.3",
+        "hostname": "Alex",
+        "port": 3306
+    },
+    "reference_encoding_diagnostics": {
+        "inventory_ddl_matches": {
+            "ai_provider_configs": true,
+            "assistant_actions": true,
+            "assistant_conversations": true,
+            "assistant_messages": true,
+            "audit_logs": true,
+            "categories": true,
+            "document_change_request_decisions": true,
+            "document_change_requests": true,
+            "document_drafts": true,
+            "document_tags": true,
+            "document_versions": true,
+            "documents": true,
+            "github_connections": true,
+            "github_query_logs": true,
+            "github_webhook_events": true,
+            "migrations": true,
+            "problem_diagnoses": true,
+            "problem_event_histories": true,
+            "problems": true,
+            "project_environments": true,
+            "project_memberships": true,
+            "project_technologies": true,
+            "projects": true,
+            "prompt_change_request_decisions": true,
+            "prompt_change_requests": true,
+            "prompt_favorites": true,
+            "prompt_templates": true,
+            "prompt_variables": true,
+            "prompt_versions": true,
+            "roles": true,
+            "solution_change_request_decisions": true,
+            "solution_change_requests": true,
+            "solution_validations": true,
+            "solution_versions": true,
+            "solutions": true,
+            "tags": true,
+            "task_comments": true,
+            "task_relations": true,
+            "task_status_histories": true,
+            "tasks": true,
+            "technical_context_change_request_decisions": true,
+            "technical_context_change_requests": true,
+            "technical_context_drafts": true,
+            "technical_context_versions": true,
+            "technical_contexts": true,
+            "users": true
+        },
+        "stage_1_encoding_only_differences": {
+            "ai_provider_configs": true,
+            "assistant_actions": true,
+            "assistant_conversations": true,
+            "assistant_messages": true,
+            "audit_logs": true,
+            "categories": true,
+            "document_change_request_decisions": true,
+            "document_change_requests": true,
+            "document_tags": true,
+            "document_versions": true,
+            "documents": true,
+            "github_connections": true,
+            "github_query_logs": true,
+            "github_webhook_events": true,
+            "problem_diagnoses": true,
+            "problem_event_histories": true,
+            "problems": true,
+            "project_environments": true,
+            "project_memberships": true,
+            "project_technologies": true,
+            "projects": true,
+            "prompt_change_request_decisions": true,
+            "prompt_change_requests": true,
+            "prompt_favorites": true,
+            "prompt_templates": true,
+            "prompt_variables": true,
+            "prompt_versions": true,
+            "roles": true,
+            "solution_change_request_decisions": true,
+            "solution_change_requests": true,
+            "solution_validations": true,
+            "solution_versions": true,
+            "solutions": true,
+            "tags": true,
+            "task_comments": true,
+            "task_relations": true,
+            "task_status_histories": true,
+            "tasks": true,
+            "technical_context_change_request_decisions": true,
+            "technical_context_change_requests": true,
+            "technical_context_versions": true,
+            "technical_contexts": true,
+            "users": true
+        },
+        "trigger_differences": [
+            {
+                "trigger": "trg_documents_category_scope_bi",
+                "field": "ACTION_STATEMENT",
+                "encoding_only": true
+            },
+            {
+                "trigger": "trg_documents_category_scope_bu",
+                "field": "ACTION_STATEMENT",
+                "encoding_only": true
+            },
+            {
+                "trigger": "trg_document_tags_scope_bi",
+                "field": "ACTION_STATEMENT",
+                "encoding_only": true
+            },
+            {
+                "trigger": "trg_document_tags_scope_bu",
+                "field": "ACTION_STATEMENT",
+                "encoding_only": true
+            },
+            {
+                "trigger": "trg_task_relations_no_self_bi",
+                "field": "ACTION_STATEMENT",
+                "encoding_only": true
+            },
+            {
+                "trigger": "trg_task_relations_no_self_bu",
+                "field": "ACTION_STATEMENT",
+                "encoding_only": true
+            }
+        ]
+    },
+    "tables": 46,
+    "table_checks": {
+        "ai_provider_configs": {
+            "rows": 1,
+            "sha256": "a63148da472d66919d71be2f621a86ee80b500c6446bdb8356f00eb69d8f99a1",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "assistant_actions": {
+            "rows": 1,
+            "sha256": "4bbebcf6c741ac1a9d7a1f18546138aa3d565b316133da816aefa26ad86e5e75",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "assistant_conversations": {
+            "rows": 1,
+            "sha256": "ea5a2d612bd6e65784e005219581760eaa9d20963d53795a49f66c4f7c73daf0",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "assistant_messages": {
+            "rows": 2,
+            "sha256": "404e4d26512245a539e27acb43eca9d5106e7eeed5e821e4e872fcc3c3a52c61",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "audit_logs": {
+            "rows": 1,
+            "sha256": "8e42d4151397c80d939b896e470839110cadb4a7a67a1bbed06e2227c10e25de",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "categories": {
+            "rows": 4,
+            "sha256": "808406e78e315735ddabf317ec3c1db599d85cdd47327dc3ed0d5e92b5d488ea",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "document_change_request_decisions": {
+            "rows": 1,
+            "sha256": "6032aa260a9e7c5c3f521c5c14b061cf921e1b6f063b84422afd2e262bbc5a5f",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "document_change_requests": {
+            "rows": 2,
+            "sha256": "82051388538c1d1f849c294a5b7ea508d91bd012975632d02e12ee87510194c5",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "document_drafts": {
+            "rows": 0,
+            "sha256": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "rows_match": true,
+            "ddl_match": true,
+            "columns_match": true
+        },
+        "document_tags": {
+            "rows": 3,
+            "sha256": "6b1ccd94abc1eda006fb057671abafa258192a184a36afd014f877478739d7cc",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "document_versions": {
+            "rows": 4,
+            "sha256": "d5bd6b39704783327575e1ef7bdc46f61f1183adcba43cf2e0806b3eeaa9f522",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "documents": {
+            "rows": 3,
+            "sha256": "098f5b39791ca90e1a8bdb73780b7964c08ee9fa453dfb6dd1a853ea3c40488c",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "github_connections": {
+            "rows": 1,
+            "sha256": "1854b5eadfc87a0baf872281a65b1857cf20848ac7730be95fd8de9686bd8a15",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "github_query_logs": {
+            "rows": 1,
+            "sha256": "0507bd1263b0605b16f7e2ba52c8d7a97853d13d6f9199e11fdf13a268186182",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "github_webhook_events": {
+            "rows": 1,
+            "sha256": "c0601a628cae2863cefad5fa372cc47ca1ab1197fd4ec9528d9beb5f07d88a8c",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "migrations": {
+            "rows": 2,
+            "sha256": "fb6d91dd9e1923b1939c8131ee3220f8a464a19c851c98b41216db19c752c991",
+            "rows_match": true,
+            "ddl_match": true,
+            "columns_match": true
+        },
+        "problem_diagnoses": {
+            "rows": 1,
+            "sha256": "7ea3b5c2f531227b538385ee41d5540c371670ee019af9f6a9ebee197d170c2a",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "problem_event_histories": {
+            "rows": 2,
+            "sha256": "8ac91faeb925376c3688e84a9299cc11e67539e279944d447a01fcc857bc625f",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "problems": {
+            "rows": 2,
+            "sha256": "f7cb72f15aa222ba646e984103e53797ead286d71d135d009e183f66f8032872",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "project_environments": {
+            "rows": 4,
+            "sha256": "0aa3951e1990df7ebac6dae3485fae20502b4ff23f210d0aa3bf89ca4f79be5b",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "project_memberships": {
+            "rows": 4,
+            "sha256": "b3bd0769630a65e5aa8c81b9a4ca2deec65051786828dbd50a0b177e51937925",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "project_technologies": {
+            "rows": 4,
+            "sha256": "b860d3bddb5773bc63b097cb922ac27cd6ec56d166e7fa1fb16fa2f7483bd6f2",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "projects": {
+            "rows": 2,
+            "sha256": "08b20837a6872f8e1f056a5dea250cf809ff1cf845b9894f12aede5e1c1d33c8",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "prompt_change_request_decisions": {
+            "rows": 1,
+            "sha256": "283c3b9152918da0efff7cd180371daf5ca7431d2bfbc00864cefb5b3dbf7063",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "prompt_change_requests": {
+            "rows": 2,
+            "sha256": "c387a7ff31b1e11b1f29da8d7bbe4abee415cc6cc130ed6f12ddf4566b9e44a9",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "prompt_favorites": {
+            "rows": 3,
+            "sha256": "ef96cc673883efd0a7eb1866f13a8116b8d0b1eb179125c6a9e5450568cd2dc1",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "prompt_templates": {
+            "rows": 2,
+            "sha256": "1a8ae04bc169e07e7981beb97343c37000fa8e46006f47d2c8636af96a78d8c1",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "prompt_variables": {
+            "rows": 3,
+            "sha256": "9d01fc4cd0b1f6eec768d30a142dcb42c630b90f1ae6147ee7fcc153a9c92f56",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "prompt_versions": {
+            "rows": 3,
+            "sha256": "c7b6a7b0d43e6a1fb1f81eb275a737af5941cfb9231e56d04ee910b353e203f0",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "roles": {
+            "rows": 6,
+            "sha256": "c3a795a8406ceb482d824328f15afbfbbd35a7498ee65223cce1b5096e205e55",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "solution_change_request_decisions": {
+            "rows": 1,
+            "sha256": "0d3e9e9f37f81a3e4ee406b0bd0c38d3231a2efd5bee936d396101b6968edafe",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "solution_change_requests": {
+            "rows": 1,
+            "sha256": "ef704f60dd05f7d3cbbb2ecbdee5cbf82eba4d0160a0b78af7f7ad94cdf14d13",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "solution_validations": {
+            "rows": 1,
+            "sha256": "785c4222f1b0a06eed5d2f0d57b2ee377c9ba449e04bab5fb60b56ab89a4cc06",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "solution_versions": {
+            "rows": 2,
+            "sha256": "d43754963b52bb4bb32757f9d7a9db5b84d4b1603e65f1ca25b52ed60a1d5599",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "solutions": {
+            "rows": 1,
+            "sha256": "aebba4b5aff88d35b424af682351c9ae154e35806bd391c9b994b49cfed14b7d",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "tags": {
+            "rows": 4,
+            "sha256": "4b8a5e8554921361f883c4307486f4ddc28710d0193b104574735f8adf1c151b",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "task_comments": {
+            "rows": 2,
+            "sha256": "af6e58ffe6d0b5ae19dcf24d11299c813d0d5a2cdca599248dc5162aa7eb3261",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "task_relations": {
+            "rows": 2,
+            "sha256": "7de1caeed7db02f463da65308a6fbd6cf626817b5c099e7fdef2f4c71daf1914",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "task_status_histories": {
+            "rows": 2,
+            "sha256": "3e9c1945b1ec87ff7da678795d63b2d76ea09dc06aafeb75615f09d287b3e573",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "tasks": {
+            "rows": 3,
+            "sha256": "a4b9c3ab910827f0373014b84aa1b3450984165386b7d439044c2fb499be1966",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "technical_context_change_request_decisions": {
+            "rows": 1,
+            "sha256": "8244a19fb40f920e60b2936ddc4ac6477d4137dbbe56157dc213c2937e9e7ae4",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "technical_context_change_requests": {
+            "rows": 2,
+            "sha256": "97a89da4c050b169db5d7f263962d127e3582cdcc4f6c529c4ce77b6f97b6227",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "technical_context_drafts": {
+            "rows": 0,
+            "sha256": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "rows_match": true,
+            "ddl_match": true,
+            "columns_match": true
+        },
+        "technical_context_versions": {
+            "rows": 3,
+            "sha256": "9361a4c040e540566602574b9388e50765ac5f271a92a047759345f13df6b249",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "technical_contexts": {
+            "rows": 2,
+            "sha256": "74e158be6b784cdefa639048e898668ae44753dbe6cf1a873ae0e85e06011527",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        },
+        "users": {
+            "rows": 5,
+            "sha256": "8b3d2502c201d78f65e9d76e218158749ca818f3fe4a37def99b48b8177d11d7",
+            "rows_match": true,
+            "ddl_match": false,
+            "columns_match": true
+        }
+    },
+    "business_rows": 97,
+    "history": [
+        {
+            "id": 1,
+            "migration": "2026_10_18_000003_add_project_documentation_workflow",
+            "batch": 1
+        },
+        {
+            "id": 2,
+            "migration": "2026_10_19_000001_add_task_deadlines",
+            "batch": 2
+        }
+    ],
+    "triggers_match": false,
+    "routines_match": true,
+    "events_match": true,
+    "code_checks": {
+        "database/migrations/0000_01_01_000001_create_ai_provider_configs_table.php": true,
+        "database/migrations/0000_01_01_000002_create_assistant_actions_table.php": true,
+        "database/migrations/0000_01_01_000003_create_assistant_conversations_table.php": true,
+        "database/migrations/0000_01_01_000004_create_assistant_messages_table.php": true,
+        "database/migrations/0000_01_01_000005_create_audit_logs_table.php": true,
+        "database/migrations/0000_01_01_000006_create_categories_table.php": true,
+        "database/migrations/0000_01_01_000007_create_document_change_request_decisions_table.php": true,
+        "database/migrations/0000_01_01_000008_create_document_change_requests_table.php": true,
+        "database/migrations/0000_01_01_000009_create_document_tags_table.php": true,
+        "database/migrations/0000_01_01_000010_create_document_versions_table.php": true,
+        "database/migrations/0000_01_01_000011_create_documents_table.php": true,
+        "database/migrations/0000_01_01_000012_create_github_connections_table.php": true,
+        "database/migrations/0000_01_01_000013_create_github_query_logs_table.php": true,
+        "database/migrations/0000_01_01_000014_create_github_webhook_events_table.php": true,
+        "database/migrations/0000_01_01_000015_create_problem_diagnoses_table.php": true,
+        "database/migrations/0000_01_01_000016_create_problem_event_histories_table.php": true,
+        "database/migrations/0000_01_01_000017_create_problems_table.php": true,
+        "database/migrations/0000_01_01_000018_create_project_environments_table.php": true,
+        "database/migrations/0000_01_01_000019_create_project_memberships_table.php": true,
+        "database/migrations/0000_01_01_000020_create_project_technologies_table.php": true,
+        "database/migrations/0000_01_01_000021_create_projects_table.php": true,
+        "database/migrations/0000_01_01_000022_create_prompt_change_request_decisions_table.php": true,
+        "database/migrations/0000_01_01_000023_create_prompt_change_requests_table.php": true,
+        "database/migrations/0000_01_01_000024_create_prompt_favorites_table.php": true,
+        "database/migrations/0000_01_01_000025_create_prompt_templates_table.php": true,
+        "database/migrations/0000_01_01_000026_create_prompt_variables_table.php": true,
+        "database/migrations/0000_01_01_000027_create_prompt_versions_table.php": true,
+        "database/migrations/0000_01_01_000028_create_roles_table.php": true,
+        "database/migrations/0000_01_01_000029_create_solution_change_request_decisions_table.php": true,
+        "database/migrations/0000_01_01_000030_create_solution_change_requests_table.php": true,
+        "database/migrations/0000_01_01_000031_create_solution_validations_table.php": true,
+        "database/migrations/0000_01_01_000032_create_solution_versions_table.php": true,
+        "database/migrations/0000_01_01_000033_create_solutions_table.php": true,
+        "database/migrations/0000_01_01_000034_create_tags_table.php": true,
+        "database/migrations/0000_01_01_000035_create_task_comments_table.php": true,
+        "database/migrations/0000_01_01_000036_create_task_relations_table.php": true,
+        "database/migrations/0000_01_01_000037_create_task_status_histories_table.php": true,
+        "database/migrations/0000_01_01_000038_create_tasks_table.php": true,
+        "database/migrations/0000_01_01_000039_create_technical_context_change_request_decisions_table.php": true,
+        "database/migrations/0000_01_01_000040_create_technical_context_change_requests_table.php": true,
+        "database/migrations/0000_01_01_000041_create_technical_context_versions_table.php": true,
+        "database/migrations/0000_01_01_000042_create_technical_contexts_table.php": true,
+        "database/migrations/0000_01_01_000043_create_users_table.php": true,
+        "database/migrations/0000_01_02_000044_add_assistant_actions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000045_add_assistant_conversations_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000046_add_assistant_messages_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000047_add_audit_logs_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000048_add_categories_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000049_add_document_change_request_decisions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000050_add_document_change_requests_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000051_add_document_tags_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000052_add_document_versions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000053_add_documents_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000054_add_github_connections_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000055_add_github_query_logs_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000056_add_problem_diagnoses_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000057_add_problem_event_histories_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000058_add_problems_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000059_add_project_environments_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000060_add_project_memberships_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000061_add_project_technologies_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000062_add_projects_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000063_add_prompt_change_request_decisions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000064_add_prompt_change_requests_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000065_add_prompt_favorites_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000066_add_prompt_templates_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000067_add_prompt_variables_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000068_add_prompt_versions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000069_add_solution_change_request_decisions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000070_add_solution_change_requests_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000071_add_solution_validations_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000072_add_solution_versions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000073_add_solutions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000074_add_tags_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000075_add_task_comments_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000076_add_task_relations_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000077_add_task_status_histories_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000078_add_tasks_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000079_add_technical_context_change_request_decisions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000080_add_technical_context_change_requests_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000081_add_technical_context_versions_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000082_add_technical_contexts_foreign_keys.php": true,
+        "database/migrations/0000_01_02_000083_add_users_foreign_keys.php": true,
+        "database/migrations/0000_01_03_000084_create_trg_document_tags_scope_bi.php": true,
+        "database/migrations/0000_01_03_000085_create_trg_document_tags_scope_bu.php": true,
+        "database/migrations/0000_01_03_000086_create_trg_task_relations_no_self_bi.php": true,
+        "database/migrations/0000_01_03_000087_create_trg_task_relations_no_self_bu.php": true,
+        "database/migrations/0000_01_03_000088_create_trg_documents_category_scope_bi.php": true,
+        "database/migrations/0000_01_03_000089_create_trg_documents_category_scope_bu.php": true,
+        "database/migrations/0001_01_01_000000_create_users_table.php": true,
+        "database/migrations/0001_01_01_000001_create_cache_table.php": true,
+        "database/migrations/0001_01_01_000002_create_jobs_table.php": true,
+        "database/migrations/2026_10_18_000003_add_project_documentation_workflow.php": true,
+        "database/migrations/2026_10_19_000001_add_task_deadlines.php": true,
+        "database/migrations/2026_10_23_000001_add_organization_access_management.php": true,
+        "database/migrations/2026_10_28_000001_normalize_workflow_pending_indexes.php": true,
+        "tools/rehearse-migration-reconciliation.php": true,
+        "tests/Feature/MigrationReconciliationMysqlTest.php": true
+    },
+    "backup": {
+        "file": "C:\\Users\\alex1\\AppData\\Local\\SPACEdev-backups\\spacedev_reconcile_20261028_122217_5bd62f53\\spacedev_test.sql",
+        "exists": true,
+        "checksum_match": true,
+        "bytes_match": true,
+        "restore_evidence_match": true
+    },
+    "requested_users": {
+        "Alex": [],
+        "Lauro": []
+    },
+    "result": "STOPPED"
+}

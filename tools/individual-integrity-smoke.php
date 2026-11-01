@@ -25,9 +25,9 @@ $rejectExact = static function (callable $operation, int $code, string $label) u
     }
     throw new RuntimeException('Accepted invalid data: '.$label);
 };
-$assert((int) $db->selectOne('SELECT COUNT(*) n FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = ?', [$database])->n === 83, 'Exactly 83 final foreign keys');
+$assert((int) $db->selectOne('SELECT COUNT(*) n FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = ?', [$database])->n === 92, '83 baseline plus nine access-management foreign keys');
 $assert((int) $db->selectOne('SELECT COUNT(*) n FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA = ?', [$database])->n === 6, 'Exactly six final triggers');
-$assert((int) $db->selectOne('SELECT COUNT(*) n FROM (SELECT DISTINCT TABLE_NAME, INDEX_NAME FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = ?) i', [$database])->n === 172, '172 indexes including seven infrastructure tables');
+$assert((int) $db->selectOne('SELECT COUNT(*) n FROM (SELECT DISTINCT TABLE_NAME, INDEX_NAME FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = ?) i', [$database])->n === 187, '172 baseline plus fifteen access-management indexes');
 $db->beginTransaction();
 try {
     $role = $db->table('roles')->insertGetId(['name' => 'Integrity', 'slug' => 'integrity']);
@@ -109,16 +109,20 @@ try {
 } finally {
     $db->rollBack();
 }
-$deadlines = require database_path('migrations/2026_10_19_000001_add_task_deadlines.php');
-$workflow = require database_path('migrations/2026_10_18_000003_add_project_documentation_workflow.php');
-// DDL is deliberately exercised only on this empty, disposable destination.
-$deadlines->down();
-$assert(! Schema::hasColumn('tasks', 'due_date'), 'Deadline incremental down removes its columns');
-$deadlines->up();
-$workflow->down();
-$assert(! Schema::hasTable('document_drafts') && ! Schema::hasColumn('document_change_requests', 'pending_document_id'), 'Documentation incremental down removes generated keys and drafts');
-$workflow->up();
-$assert(Schema::hasColumn('document_change_requests', 'pending_document_id') && Schema::hasTable('technical_context_drafts'), 'Both incrementals reapply without duplicate objects');
+if (! isset($options['preserve-schema'])) {
+    $deadlines = require database_path('migrations/2026_10_19_000001_add_task_deadlines.php');
+    $workflow = require database_path('migrations/2026_10_18_000003_add_project_documentation_workflow.php');
+    // DDL is deliberately exercised only on this empty, disposable destination.
+    $deadlines->down();
+    $assert(! Schema::hasColumn('tasks', 'due_date'), 'Deadline incremental down removes its columns');
+    $deadlines->up();
+    $workflow->down();
+    $assert(! Schema::hasTable('document_drafts') && ! Schema::hasColumn('document_change_requests', 'pending_document_id'), 'Documentation incremental down removes generated keys and drafts');
+    $workflow->up();
+    $assert(Schema::hasColumn('document_change_requests', 'pending_document_id') && Schema::hasTable('technical_context_drafts'), 'Both incrementals reapply without duplicate objects');
+} else {
+    $report['rollback_migration_checks'] = 'Skipped: --preserve-schema; no destructive migration down executed.';
+}
 $report['integrity_checks'] = $checks;
 $report['mysql57'] = 'PENDING: no isolated MySQL 5.7.44 instance available';
 file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");

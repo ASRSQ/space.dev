@@ -45,11 +45,11 @@ class TaskLifecycleService
         DB::transaction(function () use ($task, $newStatus, $archiving, $restoring, $reason): void {
             $lockedTask = Task::query()->lockForUpdate()->findOrFail($task->getKey());
 
-            Gate::authorize('update', $lockedTask);
-
             $project = Project::query()
                 ->lockForUpdate()
                 ->findOrFail($lockedTask->project_id);
+
+            Gate::authorize($archiving || $restoring ? 'archive' : 'update', $lockedTask);
 
             if ($project->isArchived()) {
                 throw new DomainException('Tarefas de projetos arquivados são somente para consulta.');

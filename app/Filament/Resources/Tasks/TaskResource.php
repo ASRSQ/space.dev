@@ -8,6 +8,7 @@ use App\Filament\Resources\Tasks\Pages\TaskKanban;
 use App\Filament\Resources\Tasks\Pages\ViewTask;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 use App\Services\TaskAssignmentService;
 use App\Services\TaskLifecycleService;
 use App\Support\TaskMarkdown;
@@ -32,6 +33,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
@@ -49,6 +51,13 @@ class TaskResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Projetos';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('project', fn ($q) => $q->visibleTo(auth()->user()));
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -59,7 +68,7 @@ class TaskResource extends Resource
                         ->label('Projeto')
                         ->options(fn (string $operation): array => $operation === 'create'
                             ? app(TaskAssignmentService::class)->projectOptionsForTaskCreation()
-                            : Project::query()->orderBy('name')->pluck('name', 'id')->all())
+                            : Project::query()->visibleTo(auth()->user())->orderBy('name')->pluck('name', 'id')->all())
                         ->searchable()
                         ->required()
                         ->live()
@@ -88,6 +97,9 @@ class TaskResource extends Resource
                             ->optionsForEditing(filled($get('project_id')) ? (int) $get('project_id') : null, $record))
                         ->searchable()
                         ->placeholder('Sem responsável')
+                        ->helperText('Somente membros ativos elegíveis do projeto. Se o nome não aparecer, confira a conta e o vínculo em Membros dos projetos. Atribuições antigas são preservadas.')
+                        ->disabled(fn (?Task $record): bool => $record && ! Gate::allows('assign', $record))
+                        ->dehydrated()
                         ->rules(['nullable', 'integer']),
                     ...self::deadlineFields(),
                     MarkdownEditor::make('description')
@@ -142,12 +154,14 @@ class TaskResource extends Resource
             Section::make('Relações entre tarefas')
                 ->schema([
                     RepeatableEntry::make('outgoingRelations')
+                        ->state(fn (Task $record) => $record->outgoingRelations()->whereHas('targetTask.project', fn ($q) => $q->visibleTo(auth()->user()))->get())
                         ->label('Relações de saída')
                         ->schema([
                             TextEntry::make('relation_type')->label('Tipo'),
                             TextEntry::make('targetTask.title')->label('Tarefa relacionada'),
                         ]),
                     RepeatableEntry::make('incomingRelations')
+                        ->state(fn (Task $record) => $record->incomingRelations()->whereHas('sourceTask.project', fn ($q) => $q->visibleTo(auth()->user()))->get())
                         ->label('Relações de entrada')
                         ->schema([
                             TextEntry::make('relation_type')->label('Tipo'),
@@ -191,8 +205,8 @@ class TaskResource extends Resource
             ->filters([
                 SelectFilter::make('deadline')->label('Prazo')->options(self::deadlineFilterOptions())
                     ->query(fn ($query, array $data) => $query->deadline($data['value'] ?? null)),
-                SelectFilter::make('project_id')->label('Projeto')->relationship('project', 'name'),
-                SelectFilter::make('assigned_user_id')->label('Responsável')->relationship('assignedUser', 'name'),
+                SelectFilter::make('project_id')->label('Projeto')->options(fn () => Project::query()->visibleTo(auth()->user())->pluck('name', 'id')),
+                SelectFilter::make('assigned_user_id')->label('Responsável')->options(fn () => User::query()->whereHas('assignedTasks', fn ($q) => $q->whereHas('project', fn ($p) => $p->visibleTo(auth()->user())))->pluck('name', 'id')),
                 SelectFilter::make('status')->label('Status')->options(self::statusOptions()),
                 SelectFilter::make('priority')->label('Prioridade')->options(self::priorityOptions()),
                 SelectFilter::make('task_type')->label('Tipo')->options(self::typeOptions()),
@@ -226,12 +240,12 @@ class TaskResource extends Resource
                 Action::make('archive')
                     ->label('Arquivar')
                     ->requiresConfirmation()
-                    ->authorize(fn (Task $record): bool => Gate::allows('update', $record))
+                    ->authorize(fn (Task $record): bool => Gate::allows('archive', $record))
                     ->visible(fn (Task $record): bool => self::canMutate($record)
                         && ! $record->isArchived()
                         && in_array($record->status, TaskLifecycleService::OPERATIONAL_STATUSES, true))
                     ->action(function (Task $record): void {
-                        Gate::authorize('update', $record);
+                        Gate::authorize('archive', $record);
 
                         try {
                             app(TaskLifecycleService::class)->archive($record);
@@ -242,10 +256,10 @@ class TaskResource extends Resource
                 Action::make('restore')
                     ->label('Restaurar')
                     ->requiresConfirmation()
-                    ->authorize(fn (Task $record): bool => Gate::allows('update', $record))
+                    ->authorize(fn (Task $record): bool => Gate::allows('archive', $record))
                     ->visible(fn (Task $record): bool => self::canMutate($record) && $record->isArchived())
                     ->action(function (Task $record): void {
-                        Gate::authorize('update', $record);
+                        Gate::authorize('archive', $record);
 
                         try {
                             app(TaskLifecycleService::class)->restore($record);

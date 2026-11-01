@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ProjectAccess;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -51,9 +52,17 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'admin'
-            && $this->status === 'active'
-            && in_array($this->role?->slug, ['super-admin', 'admin'], true);
+        return $panel->getId() === 'admin' && app(ProjectAccess::class)->panel($this);
+    }
+
+    public function organizationMemberships(): HasMany
+    {
+        return $this->hasMany(OrganizationMembership::class);
+    }
+
+    public function teamMemberships(): HasMany
+    {
+        return $this->hasMany(TeamMembership::class);
     }
 
     public function ownedProjects(): HasMany
@@ -210,5 +219,4 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(ProblemEventHistory::class, 'user_id');
     }
-
 }

@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources\Projects\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\Action;
-use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Resources\ProjectMemberships\ProjectMembershipResource;
 use App\Filament\Resources\Projects\ProjectResource;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewProject extends ViewRecord
 {
@@ -14,6 +15,8 @@ class ViewProject extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('members')->label('Membros do projeto')
+                ->url(fn () => ProjectMembershipResource::getUrl('index', ['tableFilters' => ['project_id' => ['value' => $this->getRecord()->id]]])),
             Action::make('documentation')
                 ->label('Central de documentação')
                 ->icon('heroicon-o-book-open')

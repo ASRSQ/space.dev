@@ -30,12 +30,19 @@ if (str_contains(strtolower($server->version), 'mariadb')) {
 
 // Read-only evidence for the actual local task/user. Never assign or update them.
 $snapshot = static function () use ($source): string {
-    return hash('sha256', json_encode([
-        $source->table('tasks')->orderBy('id')->get()->all(),
-        $source->table('users')->orderBy('id')->get()->all(),
-        $source->table('project_memberships')->orderBy('id')->get()->all(),
-        $source->table('problems')->orderBy('id')->get()->all(),
-    ], JSON_THROW_ON_ERROR));
+    $tables = [];
+    foreach ($source->select('SHOW FULL TABLES WHERE Table_type = ?', ['BASE TABLE']) as $row) {
+        $table = array_values((array) $row)[0];
+        $rows = [];
+        foreach ($source->table($table)->cursor() as $record) {
+            $rows[] = hash('sha256', serialize((array) $record));
+        }
+        sort($rows);
+        $quoted = '`'.str_replace('`', '``', $table).'`';
+        $tables[$table] = [hash('sha256', serialize($rows)), (array) $source->selectOne('SHOW CREATE TABLE '.$quoted)];
+    }
+    ksort($tables);
+    return hash('sha256', serialize($tables));
 };
 $before = $snapshot();
 $actualTasks = $source->table('tasks')->where('title', 'like', '%SC-001%')->get(['id', 'project_id', 'assigned_user_id']);
@@ -80,7 +87,12 @@ foreach ([
 ] as $key => $value) {
     $environment[$key] = $value;
 }
-$process = proc_open([PHP_BINARY, 'vendor/phpunit/phpunit/phpunit', 'tests/Feature/MySqlEditorValidationTest.php', '--log-junit', 'storage/app/private/editor-mysql-results.xml'], [STDIN, STDOUT, STDERR], $pipes, dirname(__DIR__), $environment);
+$access = in_array('--access', $argv, true);
+$consolidated = in_array('--consolidated', $argv, true);
+$label = $consolidated ? 'consolidated' : ($access ? 'access' : 'editor');
+$testFile = $access ? 'tests/Feature/AccessManagementTest.php' : 'tests/Feature/MySqlEditorValidationTest.php';
+$testFiles = $consolidated ? ['tests/Feature/AccessManagementTest.php', 'tests/Feature/MySqlEditorValidationTest.php'] : [$testFile];
+$process = proc_open([PHP_BINARY, 'vendor/phpunit/phpunit/phpunit', ...$testFiles, '--log-junit', 'storage/app/private/'.$label.'-mysql-results.xml'], [STDIN, STDOUT, STDERR], $pipes, dirname(__DIR__), $environment);
 if (! is_resource($process)) {
     throw new RuntimeException('Could not start PHPUnit.');
 }
@@ -95,12 +107,16 @@ foreach ($target->select('SHOW TABLES') as $row) {
 $report = [
     'database' => $database, 'server' => $server->version, 'port' => $server->port,
     'php' => PHP_VERSION, 'phpunit_exit_code' => $exitCode,
+    'source_database' => $source->getDatabaseName(),
+    'target_tables' => count($target->select('SHOW TABLES')),
+    'organization_migration_applied' => $target->table('migrations')->where('migration', '2026_10_23_000001_add_organization_access_management')->exists(),
     'source_rows_unchanged' => hash_equals($before, $snapshot()),
+    'source_snapshot_scope' => 'All existing base tables: unordered row multiset hashes and SHOW CREATE TABLE; read-only queries only.',
     'application_rows_after_tests' => $remainingRows,
     'actual_local_sc001_matches' => $actualTasks->count(), 'actual_local_lauro_matches' => $lauros->count(),
     'actual_local_assignment_read_only' => $eligibility,
     'browser_executed' => false,
 ];
-file_put_contents(dirname(__DIR__).'/docs/editor-mysql-validation.json', json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
+file_put_contents(dirname(__DIR__).'/docs/'.$label.'-mysql-validation.json', json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
 echo json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)."\n";
 exit($exitCode === 0 && $report['source_rows_unchanged'] && $remainingRows === 0 ? 0 : 1);

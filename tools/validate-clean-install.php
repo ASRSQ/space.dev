@@ -52,6 +52,7 @@ if ($status !== 0) {
     throw new RuntimeException('Migration failed. Isolated database retained for inspection.');
 }
 $inventory = json_decode(file_get_contents(dirname(__DIR__).'/docs/schema-inventory.json'), true, flags: JSON_THROW_ON_ERROR);
+$inventory = (require __DIR__.'/access-schema-expectations.php')($inventory);
 $normalize = static function (string $ddl): array {
     $ddl = preg_replace('/ AUTO_INCREMENT=\d+/', '', $ddl);
     $ddl = str_replace(' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci', ' COLLATE utf8mb4_unicode_ci', $ddl);

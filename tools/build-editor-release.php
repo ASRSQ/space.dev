@@ -2,6 +2,9 @@
 
 // Explicit allowlist: never package .env, migrations, databases, logs, or unrelated changes.
 $root = dirname(__DIR__);
+if (is_file($root.'/database/migrations/2026_10_23_000001_add_organization_access_management.php')) {
+    throw new RuntimeException('Editor-only release superseded. Use tools/build-access-release.php for the current code and access migration.');
+}
 $files = [
     'app/Filament/Concerns/InteractsWithDescriptionChecklist.php',
     'app/Filament/Concerns/ProtectsEditorFromStaleUpdates.php',

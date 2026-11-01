@@ -24,6 +24,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 
 class ProblemResource extends Resource
@@ -40,12 +41,20 @@ class ProblemResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Projetos';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('project', fn ($q) => $q->visibleTo(auth()->user()));
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             Section::make('Dados do erro')->columns(2)->schema([
                 Select::make('project_id')->label('Projeto')->searchable()->required()
                     ->options(fn (string $operation): array => Project::query()
+                        ->visibleTo(auth()->user())
                         ->when($operation === 'create', fn ($query) => $query->where('status', 'active')->where('is_archived', false)->whereNull('archived_at'))
                         ->orderBy('name')->pluck('name', 'id')->all())
                     ->disabledOn('edit')->dehydrated(fn (string $operation): bool => $operation === 'create')

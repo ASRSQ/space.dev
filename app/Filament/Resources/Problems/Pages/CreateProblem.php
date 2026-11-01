@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Problems\Pages;
 use App\Filament\Resources\Problems\ProblemResource;
 use App\Models\Problem;
 use App\Models\Project;
+use App\Services\ProjectAccess;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -21,6 +22,7 @@ class CreateProblem extends CreateRecord
         return DB::transaction(function () use ($data): Problem {
             Gate::authorize('create', Problem::class);
             $project = Project::query()->lockForUpdate()->findOrFail($data['project_id']);
+            abort_unless(app(ProjectAccess::class)->contribute(auth()->user(), $project), 403);
             if ($project->status !== 'active' || $project->isArchived()) {
                 throw ValidationException::withMessages(['data.project_id' => 'Novos erros exigem um projeto ativo.']);
             }

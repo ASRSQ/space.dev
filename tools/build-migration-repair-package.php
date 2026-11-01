@@ -7,6 +7,8 @@ sort($migrations, SORT_STRING);
 $files = array_map(fn ($path) => 'database/migrations/'.basename($path), $migrations);
 $files = array_merge($files, [
     'database/schema/space-baseline.json',
+    'database/schema/access-extension.json',
+    'tools/access-schema-expectations.php',
     'app/Support/ProjectDocumentationMigrationSafety.php',
     'app/Console/Commands/CreateFirstAdministrator.php',
     'database/seeders/DatabaseSeeder.php',

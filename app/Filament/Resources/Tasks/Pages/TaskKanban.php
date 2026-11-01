@@ -71,6 +71,9 @@ class TaskKanban extends KanbanResourcePage
 
     protected function columnHeaderExtras(KanbanColumn $column): array
     {
+        if (Gate::denies('create', Task::class)) {
+            return [];
+        }
         $actionName = match ($column->id) {
             'todo' => 'createTodo',
             'in_progress' => 'createInProgress',
@@ -180,6 +183,7 @@ class TaskKanban extends KanbanResourcePage
     protected function modifyRecordsQuery(Builder $query): Builder
     {
         return $query
+            ->whereHas('project', fn ($q) => $q->visibleTo(auth()->user()))
             ->deadline($this->deadlineFilter)
             ->when(in_array($this->deadlineSort, ['asc', 'desc'], true), fn (Builder $query): Builder => $query->orderBy('due_date', $this->deadlineSort)->orderBy('id'))
             ->whereIn('status', TaskLifecycleService::OPERATIONAL_STATUSES)
@@ -304,14 +308,14 @@ class TaskKanban extends KanbanResourcePage
     /** @return array<int, array{string, string}> */
     public function projectFilterOptions(): array
     {
-        return Project::query()->orderBy('name')->pluck('name', 'id')->map(fn ($name, $id): array => [(string) $id, (string) $name])->values()->all();
+        return Project::query()->visibleTo(auth()->user())->orderBy('name')->pluck('name', 'id')->map(fn ($name, $id): array => [(string) $id, (string) $name])->values()->all();
     }
 
     /** @return array<int, array{string, string}> */
     public function assigneeFilterOptions(): array
     {
         return User::query()
-            ->whereHas('assignedTasks')
+            ->whereHas('assignedTasks', fn ($q) => $q->whereHas('project', fn ($p) => $p->visibleTo(auth()->user())))
             ->orderBy('name')
             ->get(['id', 'name'])
             ->map(fn (User $user): array => [(string) $user->getKey(), $user->name])

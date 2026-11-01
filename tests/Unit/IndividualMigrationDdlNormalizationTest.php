@@ -66,6 +66,16 @@ class IndividualMigrationDdlNormalizationTest extends TestCase
     }
 
     #[DataProvider('tables')]
+    public function test_next_identity_after_rolled_back_inserts_does_not_change_schema_comparison(string $table, string $column, string $entity, string $index): void
+    {
+        $normalize = require __DIR__.'/../../tools/normalize-individual-migration-ddl.php';
+        $expected = $this->ddl($table, $column, $entity, $index);
+        $afterInserts = str_replace('ENGINE=InnoDB DEFAULT', 'ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT', $expected);
+        self::assertSame($normalize($expected), $normalize($afterInserts));
+        self::assertNotSame($normalize($expected), $normalize(str_replace('VIRTUAL', 'STORED', $afterInserts)));
+    }
+
+    #[DataProvider('tables')]
     public function test_introducers_outside_the_proven_context_are_preserved(string $table, string $column, string $entity, string $index): void
     {
         $normalize = require __DIR__.'/../../tools/normalize-individual-migration-ddl.php';

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Project;
 use App\Models\Task;
 use DomainException;
 use Illuminate\Support\Arr;
@@ -46,9 +47,16 @@ class TaskCreationService
                 ]);
             }
 
+            $project = Project::query()->findOrFail($projectId);
+            abort_unless(app(ProjectAccess::class)->contribute(Auth::user(), $project), 403);
+
             $assigneeId = filled($data['assigned_user_id'] ?? null)
                 ? (int) $data['assigned_user_id']
                 : null;
+
+            if ($assigneeId !== null && $assigneeId !== Auth::id()) {
+                abort_unless(app(ProjectAccess::class)->manage(Auth::user(), $project), 403);
+            }
 
             if ($assigneeId !== null && ! $assignment->isEligible($assigneeId, $projectId)) {
                 throw ValidationException::withMessages([

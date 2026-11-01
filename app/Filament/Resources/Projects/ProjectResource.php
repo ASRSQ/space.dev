@@ -7,8 +7,10 @@ use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Projects\Pages\ListProjects;
 use App\Filament\Resources\Projects\Pages\ProjectDocumentation;
 use App\Filament\Resources\Projects\Pages\ViewProject;
+use App\Models\Organization;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\ProjectAccess;
 use BackedEnum;
 use DomainException;
 use Filament\Actions\Action;
@@ -26,6 +28,8 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectResource extends Resource
 {
@@ -40,6 +44,13 @@ class ProjectResource extends Resource
     protected static ?string $pluralModelLabel = 'Projetos';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Projetos';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->visibleTo(auth()->user());
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -66,10 +77,18 @@ class ProjectResource extends Resource
                         ->maxLength(255),
                     Select::make('owner_user_id')
                         ->label('Proprietário')
+                        ->helperText('O proprietário não recebe vínculo ativo automaticamente. Gerencie a participação em Membros dos projetos.')
                         ->relationship(name: 'owner', titleAttribute: 'name')
+                        ->disabled(fn () => ! app(ProjectAccess::class)->platform(auth()->user()))
+                        ->dehydrated(fn () => app(ProjectAccess::class)->platform(auth()->user()))
                         ->getOptionLabelFromRecordUsing(fn (User $record): string => "{$record->name} (#{$record->getKey()})")
                         ->searchable()
                         ->required(),
+                    Select::make('organization_id')->label('Organização administrativa')
+                        ->options(fn () => Organization::query()->whereNull('archived_at')->pluck('name', 'id'))
+                        ->visible(fn () => app(ProjectAccess::class)->platform(auth()->user()) && \Illuminate\Support\Facades\Schema::hasColumn('projects', 'organization_id'))
+                        ->dehydrated(fn () => app(ProjectAccess::class)->platform(auth()->user()) && \Illuminate\Support\Facades\Schema::hasColumn('projects', 'organization_id'))
+                        ->disabledOn('edit')->helperText('A organização é definida na criação. Transferências de projetos existentes exigem revisão dos vínculos.'),
                 ]),
         ]);
     }
@@ -147,16 +166,19 @@ class ProjectResource extends Resource
             ])
             ->recordActions([
                 Action::make('pause')
+                    ->authorize(fn ($record) => Gate::allows('archive', $record))
                     ->label('Pausar')
                     ->color('warning')
                     ->visible(fn (Project $record): bool => $record->canBePaused())
                     ->action(fn (Project $record) => self::performLifecycleTransition($record, 'pause', 'Projeto pausado.')),
                 Action::make('activate')
+                    ->authorize(fn ($record) => Gate::allows('archive', $record))
                     ->label('Ativar')
                     ->color('success')
                     ->visible(fn (Project $record): bool => $record->canBeActivated())
                     ->action(fn (Project $record) => self::performLifecycleTransition($record, 'activate', 'Projeto ativado.')),
                 Action::make('archive')
+                    ->authorize(fn ($record) => Gate::allows('archive', $record))
                     ->label('Arquivar')
                     ->color('gray')
                     ->visible(fn (Project $record): bool => $record->canBeArchived())
@@ -164,6 +186,7 @@ class ProjectResource extends Resource
                     ->modalDescription('O projeto e seus registros relacionados serão preservados. Esta ação apenas atualiza o status e os marcadores de arquivamento.')
                     ->action(fn (Project $record) => self::performLifecycleTransition($record, 'archive', 'Projeto arquivado.')),
                 Action::make('restore')
+                    ->authorize(fn ($record) => Gate::allows('archive', $record))
                     ->label('Restaurar')
                     ->color('success')
                     ->visible(fn (Project $record): bool => $record->canBeRestored())
@@ -205,6 +228,7 @@ class ProjectResource extends Resource
 
     private static function performLifecycleTransition(Project $project, string $transition, string $successTitle): void
     {
+        Gate::authorize('archive', $project);
         try {
             $project->{$transition}();
 

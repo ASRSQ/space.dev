@@ -10,11 +10,11 @@ use App\Models\TechnicalContext;
 use App\Models\TechnicalContextChangeRequest;
 use App\Models\TechnicalContextVersion;
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use DomainException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProjectDocumentationService
 {
@@ -31,6 +31,7 @@ class ProjectDocumentationService
 
         return DB::transaction(function () use ($project, $sectionKey, $section, $content, $actor): Document|TechnicalContext {
             $project = Project::query()->lockForUpdate()->findOrFail($project->getKey());
+            $this->authorizeActor($project, 'edit-project-documentation', $actor);
 
             if ($section['type'] === 'technical_context') {
                 $this->validateTechnicalDraft($content);
@@ -81,6 +82,8 @@ class ProjectDocumentationService
         }
 
         return DB::transaction(function () use ($project, $sectionKey, $section, $reason, $actor): DocumentChangeRequest|TechnicalContextChangeRequest {
+            $project = Project::query()->lockForUpdate()->findOrFail($project->getKey());
+            $this->authorizeActor($project, 'submit-project-documentation', $actor);
             if ($section['type'] === 'technical_context') {
                 $context = $this->requireTechnicalContext($project, $sectionKey);
                 $context = TechnicalContext::query()->lockForUpdate()->findOrFail($context->getKey());
@@ -128,7 +131,7 @@ class ProjectDocumentationService
         });
     }
 
-    public function decideDocument(Project $project, string $sectionKey, int $requestId, string $decision, string $comments, User $actor): DocumentVersion|null
+    public function decideDocument(Project $project, string $sectionKey, int $requestId, string $decision, string $comments, User $actor): ?DocumentVersion
     {
         if (($this->section($sectionKey)['type'] ?? null) !== 'document') {
             throw new DomainException('A seção informada não usa documentos Markdown.');
@@ -137,7 +140,7 @@ class ProjectDocumentationService
         return $this->decide($project, $sectionKey, $requestId, $decision, $comments, $actor, 'document');
     }
 
-    public function decideTechnicalContext(Project $project, string $sectionKey, int $requestId, string $decision, string $comments, User $actor): TechnicalContextVersion|null
+    public function decideTechnicalContext(Project $project, string $sectionKey, int $requestId, string $decision, string $comments, User $actor): ?TechnicalContextVersion
     {
         if (($this->section($sectionKey)['type'] ?? null) !== 'technical_context') {
             throw new DomainException('A seção informada não usa contexto técnico.');
@@ -323,13 +326,13 @@ class ProjectDocumentationService
     private function requireDocument(Project $project, string $sectionKey): Document
     {
         return $this->findDocument($project, $sectionKey)
-            ?? throw (new ModelNotFoundException())->setModel(Document::class);
+            ?? throw (new ModelNotFoundException)->setModel(Document::class);
     }
 
     private function requireTechnicalContext(Project $project, string $sectionKey): TechnicalContext
     {
         return $this->findTechnicalContext($project, $sectionKey)
-            ?? throw (new ModelNotFoundException())->setModel(TechnicalContext::class);
+            ?? throw (new ModelNotFoundException)->setModel(TechnicalContext::class);
     }
 
     /** @param array<string, mixed> $content */

@@ -1,5 +1,9 @@
 # Revisão dos editores antes da publicação — 23/10/2026
 
+> Entrega atual: [revisão consolidada](consolidated-prepublication-review.md) e [instalação/rollback](consolidated-installation.md). Os testes e comandos abaixo descrevem a etapa anterior; não utilizar o pacote histórico.
+
+> Relatório histórico da entrega dos editores. A gestão de acesso posterior exige código adicional e uma migration incremental. Para o estado atual, siga [access-management.md](access-management.md); não use o ZIP antigo de editores para publicar a gestão de usuários/organizações.
+
 ## Resultado
 
 Implementação revisada e testes relacionados aprovados. Nenhuma operação remota foi executada. Nenhum registro real foi alterado nem houve migration destrutiva. A publicação ainda depende da conferência visual/JavaScript no navegador e dos registros específicos SC-001/Lauro no ambiente em que eles existem.

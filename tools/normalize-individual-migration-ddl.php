@@ -2,6 +2,9 @@
 
 // Pure comparison helper: loading this file never boots Laravel or opens a database.
 return static function (string $ddl): array {
+    // SHOW CREATE adds the next identity after test inserts, even when rows roll back.
+    // Remove this metadata before the strict table-header guard below.
+    $ddl = preg_replace('/ AUTO_INCREMENT=\d+/', '', $ddl);
     // Apply the existing display-width rule before matching the exact definition.
     $ddl = preg_replace('/\b(bigint|int|smallint)\(\d+\)/i', '$1', $ddl);
     // Only these two reviewed generated expressions may omit the introducer.
@@ -25,7 +28,6 @@ return static function (string $ddl): array {
         $ddl = preg_replace('/^'.preg_quote($introduced, '/').'$/m', $plain, $ddl);
     }
 
-    $ddl = preg_replace('/ AUTO_INCREMENT=\d+/', '', $ddl);
     // Explicit DYNAMIC is equivalent to the reference's verified Dynamic default.
     $ddl = str_replace(' ROW_FORMAT=DYNAMIC', '', $ddl);
     // InnoDB treats NO ACTION and RESTRICT as the default immediate check.

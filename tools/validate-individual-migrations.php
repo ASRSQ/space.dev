@@ -14,7 +14,7 @@ set_exception_handler(static function (Throwable $error): void {
     exit(1);
 });
 
-$options = getopt('', ['existing-empty-database:', 'expected-server:', 'preflight', 'infrastructure-first']);
+$options = getopt('', ['existing-empty-database:', 'expected-server:', 'preflight', 'infrastructure-first', 'preserve-schema']);
 $existingDatabase = $options['existing-empty-database'] ?? null;
 $source = DB::connection('mysql');
 if ($existingDatabase !== null) {
@@ -100,6 +100,7 @@ foreach ($inventory['ddl'] as $table => $expected) {
         throw new RuntimeException("Source changed since diagnosis: $table");
     }
 }
+$inventory = (require __DIR__.'/access-schema-expectations.php')($inventory);
 $normalize = require __DIR__.'/normalize-individual-migration-ddl.php';
 $differences = [];
 $expectedFinalDdl = [];

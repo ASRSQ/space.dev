@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Services\ProjectAccess;
+use DomainException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
-use DomainException;
 
 class Project extends Model
 {
@@ -22,6 +24,7 @@ class Project extends Model
         'owner_user_id',
         'is_archived',
         'archived_at',
+        'organization_id',
     ];
 
     protected function casts(): array
@@ -147,6 +150,16 @@ class Project extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_user_id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function scopeVisibleTo(Builder $query, ?User $user): Builder
+    {
+        return app(ProjectAccess::class)->scope($query, $user);
     }
 
     public function tasks(): HasMany
